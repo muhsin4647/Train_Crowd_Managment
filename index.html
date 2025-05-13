@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Crowd Finder System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .screen {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn {
+            background-color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 70%;
+            border-radius: 5px;
+        }
+
+        .report {
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Menu Screen -->
+    <div id="mainMenu" class="screen">
+        <h2>Select Train</h2>
+        <button onclick="showTrainOptions('aks')">AKS Train</button>
+        <button onclick="showTrainOptions('bks')">BKS Train</button>
+        <button onclick="showTrainOptions('cas')">CAS Train</button>
+    </div>
+
+    <!-- Train Options Screen -->
+    <div id="trainOptions" class="screen" style="display: none;">
+        <h2 id="trainTitle"></h2>
+        <button onclick="checkCrowd()">Check Crowd Level</button>
+        <button onclick="showAddDataModal()">Add Crowd Data</button>
+        <button class="back-btn" onclick="showMainMenu()">Back to Main Menu</button>
+    </div>
+
+    <!-- Add Data Modal -->
+    <div id="addDataModal" class="modal">
+        <div class="modal-content">
+            <h3>Select Crowd Level</h3>
+            <button onclick="addCrowdData(1)">Low</button>
+            <button onclick="addCrowdData(2)">Medium</button>
+            <button onclick="addCrowdData(3)">High</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div id="reportContent" class="report"></div>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTrain = '';
+        const data = {
+            aks: [],
+            bks: [],
+            cas: []
+        };
+
+        function showMainMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('trainOptions').style.display = 'none';
+            closeModal();
+        }
+
+        function showTrainOptions(trainCode) {
+            currentTrain = trainCode;
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('trainOptions').style.display = 'block';
+            document.getElementById('trainTitle').textContent = `${trainCode.toUpperCase()} Train Options`;
+        }
+
+        function showAddDataModal() {
+            document.getElementById('addDataModal').style.display = 'block';
+        }
+
+        function checkCrowd() {
+            const entries = data[currentTrain];
+            if (entries.length === 0) {
+                alert('No crowd data available for this train');
+                return;
+            }
+
+            const average = entries.reduce((a, b) => a + b, 0) / entries.length;
+            let level = 'High';
+            if (average < 1.5) level = 'Low';
+            else if (average < 2.5) level = 'Medium';
+
+            const report = `Crowd Analysis Report\n\n
+            Train: ${currentTrain.toUpperCase()}\n
+            Total Entries: ${entries.length}\n
+            Average Score: ${average.toFixed(2)}\n
+            Crowd Level: ${level}`;
+
+            document.getElementById('reportContent').textContent = report;
+            document.getElementById('reportModal').style.display = 'block';
+        }
+
+        function addCrowdData(value) {
+            data[currentTrain].push(value);
+            alert('Crowd data added successfully!');
+            closeModal();
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html> 
