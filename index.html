@@ -223,11 +223,17 @@
 
     <script>
         let currentTrain = '';
-        const data = {
+        // Load data from localStorage or initialize if not exists
+        let data = JSON.parse(localStorage.getItem('trainCrowdData')) || {
             aks: [],
             bks: [],
             cas: []
         };
+
+        // Function to save data to localStorage
+        function saveData() {
+            localStorage.setItem('trainCrowdData', JSON.stringify(data));
+        }
 
         function showMainMenu() {
             document.getElementById('mainMenu').style.display = 'block';
@@ -275,6 +281,7 @@
 
         function addCrowdData(value) {
             data[currentTrain].push(value);
+            saveData(); // Save to localStorage after update
             showMessage('Success', 'Thank you for contributing! Your data has been recorded.');
             closeModal();
         }
